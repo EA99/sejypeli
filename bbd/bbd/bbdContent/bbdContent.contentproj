@@ -50,8 +50,8 @@
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="norsu.png">
-      <Name>norsu</Name>
+    <Compile Include="norsu2.png">
+      <Name>norsu2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -62,8 +62,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="kenttä1.png">
-      <Name>kenttä1</Name>
+    <Compile Include="kentta1.png">
+      <Name>kentta1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="norsu.png">
+      <Name>norsu</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
