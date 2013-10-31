@@ -43,4 +43,5 @@ class Inventory : Widget
             ItemSelected(item);
         }
     }
+
 }
