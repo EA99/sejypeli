@@ -164,13 +164,14 @@ public class bbd : PhysicsGame
         LisaaNappaimet();
         Inventory inventory = new Inventory();
         Add(inventory);
+        
         foreach (PhysicsObject esine in esineet())
         {
             inventory.AddItem(esine, kivihakku);
             inventory.SelectItem(esine);
-            break;
         }
-        inventory.Position = new Vector(10, 20);
+        inventory.Y = Screen.Top - 20;
+
         int luku = RandomGen.NextInt(1, 200);
         luopuu(luku);
         //luopuu(new Vector kentanPiste = Level.GetRandomPosition());
