@@ -36,7 +36,7 @@ class Inventory : Widget
         icon.Clicked += delegate() { SelectItem(item); };
     }
 
-    void SelectItem(PhysicsObject item)
+    public void SelectItem(PhysicsObject item)
     {
         if (ItemSelected != null)
         {

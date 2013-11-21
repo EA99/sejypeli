@@ -5,6 +5,7 @@ using Jypeli.Assets;
 using Jypeli.Controls;
 using Jypeli.Effects;
 using Jypeli.Widgets;
+using System.IO;
 
 public class bbd : PhysicsGame
 {
@@ -17,9 +18,12 @@ public class bbd : PhysicsGame
     Image pelaajanKuva = LoadImage("norsu");
     Image tahtiKuva = LoadImage("norsu2");
     Image kivihakku = LoadImage("kivihakku");
+    Image puukuva = LoadImage("puunkuva");
 
     SoundEffect maaliAani = LoadSoundEffect("maali");
     DoubleMeter pelaaja1Elama;
+    string kentanNimi;
+
 
     public override void Begin()
     {
@@ -29,21 +33,18 @@ public class bbd : PhysicsGame
         valikko.AddItemHandler(3, Exit);
         Add(valikko);
         //LisaaNappaimet();
-        
-        
-        
-       
-
     }
 
-    void LuoKentta()
+    void LataaKentta(ColorTileMap kentta)
     {
-        ColorTileMap kentta1 = ColorTileMap.FromLevelAsset("kentta1");
-        kentta1.SetTileMethod(Color.Black, LisaaTaso);
-        kentta1.SetTileMethod(Color.Red, LisaaPelaaja);
-        kentta1.SetTileMethod(Color.Yellow, luovihollinen);
-        kentta1.Optimize();
-        kentta1.Execute(40,40);
+        
+        //ColorTileMap kentta1 = ColorTileMap.FromLevelAsset("kentta1");
+        kentta.SetTileMethod(Color.Black, LisaaTaso);
+        kentta.SetTileMethod(Color.Red, LisaaPelaaja);
+        kentta.SetTileMethod(Color.Yellow, luovihollinen);
+        //kentta1.SetTileMethod(Color.Blue, luopuu);
+        kentta.Optimize();
+        kentta.Execute(40,40);
 
         //Level.CreateBorders();
 
@@ -54,6 +55,7 @@ public class bbd : PhysicsGame
     {
         PhysicsObject taso = PhysicsObject.CreateStaticObject(leveys, korkeus);
         taso.Position = paikka;
+        taso.CollisionIgnoreGroup = 1;
         taso.Color = Color.Brown;
         Add(taso);
     }
@@ -62,7 +64,7 @@ public class bbd : PhysicsGame
 
     void LisaaPelaaja(Vector paikka, double leveys, double korkeus)
     {
-        pelaaja1 = new PlatformCharacter2(90,90);
+        pelaaja1 = new PlatformCharacter2(35,90);
         pelaaja1.Position = paikka;
         pelaaja1.Mass = 2.0;
         pelaaja1.Image = pelaajanKuva;
@@ -78,9 +80,6 @@ public class bbd : PhysicsGame
         pelaaja1ElamaPalkki.BarColor = Color.Green;
         Add(pelaaja1ElamaPalkki);
         
-
-        
-
     }
 
     void LisaaNappaimet()
@@ -113,26 +112,29 @@ public class bbd : PhysicsGame
     void aloita()
     {
         MultiSelectWindow tasovalikko = new MultiSelectWindow("World Menu", "Create world", "Load world", "Options","Back");
-        tasovalikko.AddItemHandler(0, luomaailma);
-        tasovalikko.AddItemHandler(1, taso1);
+        tasovalikko.AddItemHandler(0, LuoMaailma);
+        tasovalikko.AddItemHandler(1, LataaMaailma);
         Add(tasovalikko);
-         
-        
     }
-    void taso1()
+    void LataaMaailma()
     {
         Gravity = new Vector(0, -900);
 
-        LuoKentta();
+        ColorTileMap kentta1 = new ColorTileMap("kentta1");
+        LataaKentta(kentta1);
         LisaaNappaimet();
         Inventory inventory = new Inventory();
         Add(inventory);
         foreach (PhysicsObject esine in esineet())
         {
             inventory.AddItem(esine, kivihakku);
+            inventory.SelectItem(esine); 
             break;
         }
-        
+        inventory.Position = new Vector(10, 20);
+        int luku = RandomGen.NextInt(1,200);
+        luopuu(luku);
+        //luopuu(new Vector kentanPiste = Level.GetRandomPosition());
 
         Camera.Zoom(1.5);
         //Camera.ZoomToLevel();
@@ -143,29 +145,39 @@ public class bbd : PhysicsGame
         MultiSelectWindow mpl = new MultiSelectWindow("Multiplayer", "Callege", "Back");
         Add(mpl);
     }
-    void callege(string ip, int port)
-    {
-             
-    }
-    void luovihollinen(Vector paikka, double leveys, double korkeus)
-    {
-        PhysicsObject vihu = new PhysicsObject(50, 50);
-        vihu.Position = paikka;
-        vihu.Image = tahtiKuva;
-        Add(vihu);
-        
-    }
-    void luomaailma()
+
+    
+
+    void LuoMaailma()
     {
         InputWindow kysymysIkkuna = new InputWindow("World name:");
-        kysymysIkkuna.TextEntered += ProcessInput;
+        kysymysIkkuna.TextEntered += LuoUusiMaailma;
         Add(kysymysIkkuna);
 
     }
-    void ProcessInput(InputWindow ikkuna)
+    void LuoUusiMaailma(InputWindow ikkuna)
     {
-        string vastaus = ikkuna.InputBox.Text;
+        kentanNimi = ikkuna.InputBox.Text + ".png";
 
+        Gravity = new Vector(0, -900);
+        LataaKentta(new ColorTileMap( generate(500, 30) ) );
+        LisaaNappaimet();
+        Inventory inventory = new Inventory();
+        Add(inventory);
+        foreach (PhysicsObject esine in esineet())
+        {
+            inventory.AddItem(esine, kivihakku);
+            inventory.SelectItem(esine);
+            break;
+        }
+        inventory.Position = new Vector(10, 20);
+        int luku = RandomGen.NextInt(1, 200);
+        luopuu(luku);
+        //luopuu(new Vector kentanPiste = Level.GetRandomPosition());
+
+        Camera.Zoom(1.5);
+        //Camera.ZoomToLevel();
+        Camera.Follow(pelaaja1);
     }
     List<PhysicsObject> esineet()
     {
@@ -176,5 +188,65 @@ public class bbd : PhysicsGame
         esinelista.Add(kivinuija);
         
         return esinelista;
+    }
+    
+    Image generate(int leveys, int korkeus)
+    {
+        Image kuva = new Image(leveys, korkeus, Color.White);
+        // tallenna kuva
+        int tasonkorkeus = 1;
+        for (int x = 0; x < leveys; x++)
+		{
+            tasonkorkeus = tasonkorkeus + RandomGen.NextInt(-3, 3);
+            if (tasonkorkeus < 1)
+            {
+                tasonkorkeus = 2;
+            }
+            if (tasonkorkeus >= korkeus)
+            {
+                tasonkorkeus = korkeus-1;
+            }
+            for (int i = 0; i < tasonkorkeus; i++)
+            {
+                kuva[(korkeus-1)-i, x] = Color.Black;
+            }
+		}
+        kuva[2, 0] = Color.Red;
+        // Oletetaan, että kenttä on muuttujassa: Image kentanKuva
+
+        string tiedostonNimi =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kentanNimi);
+        Stream tallennusTiedosto = File.Create(tiedostonNimi);
+        Stream kuvanTiedot = kuva.AsPng();
+        kuvanTiedot.CopyTo(tallennusTiedosto);
+        tallennusTiedosto.Close();
+
+        return kuva;
+    }
+    void luokivi(Vector paikka)
+    {
+        PhysicsObject kivi = new PhysicsObject(40, 40);
+        kivi.Position = paikka;
+        kivi.Color = Color.Gray;
+        Add(kivi);
+    }
+    void luovihollinen(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject vihu = new PhysicsObject(50, 50);
+        vihu.Position = paikka;
+        vihu.Image = tahtiKuva;
+        Add(vihu);
+
+    }
+    void luopuu(double leveys)
+    {
+        PhysicsObject puu = new PhysicsObject(40, 120);
+        puu.X = leveys;
+        puu.Y = 0;
+        puu.Image = puukuva;
+        puu.CanRotate = false;
+
+        //puu.IgnoresCollisionWith(pelaaja1);
+        Add(puu);
     }
 }
