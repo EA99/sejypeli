@@ -31,7 +31,23 @@ class Inventory : Widget
     /// <param name="kuva">Esineen ikoni, joka näkyy valikossa.</param>
     public void AddItem(PhysicsObject item, Image kuva)
     {
-        PushButton icon = new PushButton(kuva);
+        Image isokuva = new Image(kuva.Width * 3, kuva.Height * 3, Color.White);
+        for (int x = 0; x < kuva.Width; x++)
+        {
+            for (int y = 0; y < kuva.Height; y++)
+            {
+                isokuva[x * 3, y * 3] = kuva[x, y];
+                isokuva[x * 3+1, y * 3] = kuva[x, y];
+                isokuva[x * 3+2, y * 3] = kuva[x, y];
+                isokuva[x * 3, y * 3+1] = kuva[x, y];
+                isokuva[x * 3+1, y * 3+1] = kuva[x, y];
+                isokuva[x * 3+2, y * 3+1] = kuva[x, y];
+                isokuva[x * 3, y * 3+2] = kuva[x, y];
+                isokuva[x * 3+1, y * 3+2] = kuva[x, y];
+                isokuva[x * 3+2, y * 3+2] = kuva[x, y];
+            }    
+        }
+        PushButton icon = new PushButton(isokuva);
         Add(icon);
         icon.Clicked += delegate() { SelectItem(item); };
     }
