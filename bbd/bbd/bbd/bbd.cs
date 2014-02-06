@@ -39,10 +39,10 @@ public class bbd : PhysicsGame
     {
         
         //ColorTileMap kentta1 = ColorTileMap.FromLevelAsset("kentta1");
-        kentta.SetTileMethod(Color.Black, LisaaTaso);
+        kentta.SetTileMethod(Color.Brown, LisaaTaso);
         kentta.SetTileMethod(Color.Red, LisaaPelaaja);
         kentta.SetTileMethod(Color.Yellow, luovihollinen);
-        //kentta1.SetTileMethod(Color.Blue, luopuu);
+        kentta.SetTileMethod(Color.Black,luokivi);
         kentta.Optimize();
         kentta.Execute(40,40);
 
@@ -207,9 +207,15 @@ public class bbd : PhysicsGame
             {
                 tasonkorkeus = korkeus-1;
             }
-            for (int i = 0; i < tasonkorkeus; i++)
+            int multalkaa = RandomGen.NextInt(0, tasonkorkeus);
+
+            for (int i = 0; i < multalkaa; i++)
             {
-                kuva[(korkeus-1)-i, x] = Color.Black;
+                kuva[(korkeus - 1) - i, x] = Color.Black;
+            }
+            for (int i = multalkaa; i < tasonkorkeus; i++)
+            {    
+                kuva[(korkeus-1)-i, x] = Color.Brown;
             }
 		}
         kuva[2, 0] = Color.Red;
@@ -224,11 +230,12 @@ public class bbd : PhysicsGame
 
         return kuva;
     }
-    void luokivi(Vector paikka)
+    void luokivi(Vector paikka, double leveys, double korkeus)
     {
-        PhysicsObject kivi = new PhysicsObject(40, 40);
+        PhysicsObject kivi = PhysicsObject.CreateStaticObject(40, 40);
         kivi.Position = paikka;
         kivi.Color = Color.Gray;
+        kivi.CollisionIgnoreGroup = 1;
         Add(kivi);
     }
     void luovihollinen(Vector paikka, double leveys, double korkeus)
@@ -250,4 +257,9 @@ public class bbd : PhysicsGame
         //puu.IgnoresCollisionWith(pelaaja1);
         Add(puu);
     }
+    void listaa()
+{
+
+}
+
 }
