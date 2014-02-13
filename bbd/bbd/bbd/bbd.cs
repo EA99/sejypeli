@@ -54,6 +54,15 @@ public class bbd : PhysicsGame
     void LisaaTaso(Vector paikka, double leveys, double korkeus)
     {
         PhysicsObject taso = PhysicsObject.CreateStaticObject(leveys, korkeus);
+        int noppa = RandomGen.NextInt(1,4);
+        if(noppa ==1)
+        {
+            taso.Tag = "hed";
+        }
+        else
+        {
+    
+        }
         taso.Position = paikka;
         taso.CollisionIgnoreGroup = 1;
         taso.Color = Color.Brown;
@@ -184,9 +193,9 @@ public class bbd : PhysicsGame
     {
         List<PhysicsObject> esinelista = new List<PhysicsObject>();
         PhysicsObject kivihakku = new PhysicsObject(30,30);
-        PhysicsObject kivinuija = new PhysicsObject(30, 30);
+        PhysicsObject kivilapio = new PhysicsObject(30, 30);
         esinelista.Add(kivihakku);
-        esinelista.Add(kivinuija);
+        esinelista.Add(kivilapio);
         
         return esinelista;
     }
