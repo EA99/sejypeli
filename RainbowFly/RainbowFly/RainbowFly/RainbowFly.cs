@@ -12,25 +12,31 @@ public class RainbowFly : PhysicsGame
     PhysicsObject hahmo;
     Vector lanta;
     IntMeter pisteLaskuri;
+    Image pv = LoadImage("pilvi");
+    int pilviaLuotu = 0;
+
     
     public override void Begin()
     {
         
         hahmoluo();
         luoraha();
+        luopilvi();
         LuoPistelaskuri();
+        MediaPlayer.Play("savel");
+        MediaPlayer.IsRepeating = true;
 
         Image bgImg = LoadImage("tausta");
-        Level.Size = new Vector(bgImg.Width * 50, bgImg.Height);
+        Level.Size = new Vector(bgImg.Width * 500, bgImg.Height);
         Level.Background.Image = LoadImage("tausta");
         Level.Background.TileToLevel();
         Level.Background.MoveTo(new Vector(-Screen.Width, 0), 100);
         
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
-        Keyboard.Listen(Key.Down, ButtonState.Down, liial,"",new Vector(0,-140));
+        Keyboard.Listen(Key.Down, ButtonState.Down, liial,"",new Vector(0,-340));
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
         Keyboard.Listen(Key.Down, ButtonState.Released,stopperi, "");
-        Keyboard.Listen(Key.Up, ButtonState.Down, liial, "", new Vector(0,140));
+        Keyboard.Listen(Key.Up, ButtonState.Down, liial, "", new Vector(0,440));
         Keyboard.Listen(Key.Up, ButtonState.Released, stopperi, "");
     }
     void hahmoluo()
@@ -60,7 +66,7 @@ public class RainbowFly : PhysicsGame
 
     void luoraha()
     {
-        IPhysicsObject raha=new PhysicsObject(20, 20);
+        PhysicsObject raha=new PhysicsObject(20, 20);
         raha.Color = Color.Yellow;
         raha.Shape = Shape.Circle;
         //raha.Position = RandomGen.NextVector(100, 400);
@@ -80,7 +86,7 @@ public class RainbowFly : PhysicsGame
         hahmo.Velocity = new Vector(
             hahmo.Velocity.X, 0 );
     }
-    void rahsaa(IPhysicsObject hahmo,IPhysicsObject raha)
+    void rahsaa(PhysicsObject hahmo,PhysicsObject raha)
     {
         raha.Destroy();
         pisteLaskuri.Value += 100;
@@ -98,5 +104,34 @@ public class RainbowFly : PhysicsGame
 
         pisteNaytto.BindTo(pisteLaskuri);
         Add(pisteNaytto);
+    }
+    void luopilvi()
+    {
+        pilviaLuotu=pilviaLuotu+1;
+        PhysicsObject pilvi = new PhysicsObject(20, 20);
+        pilvi.Image = (pv);
+        pilvi.IgnoresGravity = true;
+        pilvi.Position = Level.GetRandomPosition();
+        pilvi.Size = pilvi.Size* pilviaLuotu/3.0;
+        Add(pilvi);
+        AddCollisionHandler(hahmo, pilvi, sähkö);
+        Timer.SingleShot(0.5, luopilvi);
+    }
+    void sähkö(PhysicsObject hahmo, PhysicsObject pilvi)
+    {
+        ClearAll();
+        
+        MultiSelectWindow asd = new MultiSelectWindow("","uudelleen", "rageguittaa");
+        asd.AddItemHandler(0, Begin);
+        asd.AddItemHandler(1, ragegut);
+        Add(asd);
+    }
+    void ragegut()
+    {
+        MultiSelectWindow v = new MultiSelectWindow("rageguit","Rageguit NOW!!!","takaisin");
+        v.AddItemHandler(0, Exit);
+        v.AddItemHandler(1, Begin);
+        Add(v);
+
     }
 }
