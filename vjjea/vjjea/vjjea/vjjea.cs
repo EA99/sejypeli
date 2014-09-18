@@ -10,10 +10,21 @@ public class vjjea : Game
 {
     PhysicsObject SeInA;
     List<Label> valikonKohdat;
+    List<Image> tasot;
+    Image greenlandP = LoadImage("greenland");
+    Image IceforestP = LoadImage("iceforest");
+    Image lightingcaveP = LoadImage("lighting cave");
+    Image mountainP = LoadImage("the mountain");
     public override void Begin()
     {
         valikko();
         IsMouseVisible = true;
+        tasot = new List<Image>();
+        tasot.Add(greenlandP);
+        tasot.Add(IceforestP);
+        tasot.Add(lightingcaveP);
+        tasot.Add(mountainP);
+                  
         
         //jäämetsä();
         //Camera.ZoomToLevel();
@@ -22,7 +33,7 @@ public class vjjea : Game
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
 
     }
-    void jäämetsä()
+    void createiceforest()
     {
         ColorTileMap jaametsa = ColorTileMap.FromLevelAsset("ice_forest");
         jaametsa.SetTileMethod(Color.Black, seina);
@@ -62,6 +73,17 @@ public class vjjea : Game
     }
     void playmode()
     {
+        ClearAll();
+        Widget alusta = new Widget(new HorizontalLayout());
+        Add(alusta);
+        for (int i = 0; i < tasot.Count; i++)
+        {
+            Widget paikka = new Widget(tasot[i]);
+            alusta.BorderColor = Color.White;
+            alusta.Add(paikka);
+        }
+        
+        
     }
     void arcademode()
     {
