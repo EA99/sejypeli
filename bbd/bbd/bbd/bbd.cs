@@ -15,11 +15,11 @@ public class bbd : PhysicsGame
 
     PlatformCharacter2 pelaaja1;
 
-    Image pelaajanKuva = LoadImage("norsu");
+    Image pelaajanKuva = LoadImage("AAA");
     Image tahtiKuva = LoadImage("norsu2");
     Image kivihakku = LoadImage("kivihakku");
     Image puukuva = LoadImage("puunkuva");
-
+    GameObject osoitinko;
     SoundEffect maaliAani = LoadSoundEffect("maali");
     DoubleMeter pelaaja1Elama;
     string kentanNimi;
@@ -45,9 +45,15 @@ public class bbd : PhysicsGame
         kentta.SetTileMethod(Color.Black,luokivi);
         kentta.Optimize();
         kentta.Execute(40,40);
+        osoitinko = new GameObject(40, 40);
+        osoitinko.Color = Color.Red;
+        osoitinko.Position = Mouse.PositionOnWorld;
+        Add(osoitinko);
+        Mouse.ListenMovement(1.0, osoitin, null);
 
+        
         //Level.CreateBorders();
-
+        IsMouseVisible = true;
         Level.Background.CreateGradient(Color.SkyBlue, Color.SkyBlue);
     }
 
@@ -127,27 +133,29 @@ public class bbd : PhysicsGame
     }
     void LataaMaailma()
     {
-        Gravity = new Vector(0, -900);
+        //tähän filedialog ja sit nuo
 
-        ColorTileMap kentta1 = new ColorTileMap("kentta1");
-        LataaKentta(kentta1);
-        LisaaNappaimet();
-        Inventory inventory = new Inventory();
-        Add(inventory);
+        
+        //lataakenttä funktiolle annetaan parametreiksi bitmapimage josta se lataa kentän
+        //LisaaNappaimet();
+        //Inventory inventory = new Inventory();
+        //Add(inventory);
+        /*
         foreach (PhysicsObject esine in esineet())
         {
             inventory.AddItem(esine, kivihakku);
-            inventory.SelectItem(esine); 
-            break;
+            inventory.SelectItem(esine);
         }
-        inventory.Position = new Vector(10, 20);
-        int luku = RandomGen.NextInt(1,200);
+        inventory.Y = Screen.Top - 20;
+
+        int luku = RandomGen.NextInt(1, 200);
         luopuu(luku);
         //luopuu(new Vector kentanPiste = Level.GetRandomPosition());
 
         Camera.Zoom(1.5);
         //Camera.ZoomToLevel();
         Camera.Follow(pelaaja1);
+         */
     }
     void multiplayer()
     {
@@ -267,8 +275,15 @@ public class bbd : PhysicsGame
         Add(puu);
     }
     void listaa()
-{
+    {
 
-}
+    }
+    void osoitin(AnalogState ht) //ht=hiirentila
+    {
+        Vector q = Mouse.PositionOnWorld;
+        MessageDisplay.Add(q.X.ToString());
+
+        osoitinko.Position = q;
+    }
 
 }
