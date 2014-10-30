@@ -240,6 +240,7 @@ public class bbd : PhysicsGame
 
         string tiedostonNimi =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, kentanNimi);
+        
         Stream tallennusTiedosto = File.Create(tiedostonNimi);
         Stream kuvanTiedot = kuva.AsPng();
         kuvanTiedot.CopyTo(tallennusTiedosto);
@@ -280,10 +281,17 @@ public class bbd : PhysicsGame
     }
     void osoitin(AnalogState ht) //ht=hiirentila
     {
-        Vector q = Mouse.PositionOnWorld;
-        MessageDisplay.Add(q.X.ToString());
-
-        osoitinko.Position = q;
+        
     }
+    protected override void Update(Microsoft.Xna.Framework.GameTime gameTime)
+    {
+        base.Update(gameTime);
+        if (Mouse.PositionOnWorld != null && osoitinko != null)
+        {
+            Vector q = Mouse.PositionOnWorld;
+            MessageDisplay.Add(q.X.ToString());
 
+            osoitinko.Position = q;
+        }
+    }
 }
