@@ -7,6 +7,7 @@ using Jypeli.Effects;
 using Jypeli.Widgets;
 using System.IO;
 
+
 public class bbd : PhysicsGame
 {
     //class inventory : Widget;
@@ -111,7 +112,7 @@ public class bbd : PhysicsGame
         ControllerOne.Listen(Button.DPadLeft, ButtonState.Down, Liikuta, "Pelaaja liikkuu vasemmalle", pelaaja1, Direction.Left);
         ControllerOne.Listen(Button.DPadRight, ButtonState.Down, Liikuta, "Pelaaja liikkuu oikealle", pelaaja1, Direction.Right);
         ControllerOne.Listen(Button.A, ButtonState.Pressed, Hyppaa, "Pelaaja hyppää", pelaaja1, 350.0);
-
+        Mouse.Listen(MouseButton.Left, ButtonState.Pressed, lkk, "");
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
     }
 
@@ -277,7 +278,9 @@ public class bbd : PhysicsGame
     }
     void listaa()
     {
-
+        //hakee tiedostojen nimet listaan
+        //always I will find good to learn more
+        //List<string> tiedo = FileManager.AsyncOperation.GetFileList(); //FileManager.AsyncOperation.GetFileList(); 
     }
     void osoitin(AnalogState ht) //ht=hiirentila
     {
@@ -293,5 +296,10 @@ public class bbd : PhysicsGame
 
             osoitinko.Position = q;
         }
+    }
+    void lkk()
+    {
+        luokivi(Mouse.PositionOnWorld, 0, 0);
+
     }
 }
