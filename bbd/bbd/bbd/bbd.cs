@@ -45,9 +45,9 @@ public class bbd : PhysicsGame
         //ColorTileMap kentta1 = ColorTileMap.FromLevelAsset("kentta1");
         kentta.SetTileMethod(Color.Brown, LisaaTaso);
         kentta.SetTileMethod(Color.Red, LisaaPelaaja);
-        kentta.SetTileMethod(Color.Yellow, luovihollinen);
+        kentta.SetTileMethod(Color.Yellow, luokulta);
         kentta.SetTileMethod(Color.Black,luokivi);
-
+        kentta.SetTileMethod(Color.Gray, luohiili);
         kentta.Optimize();
         kentta.Execute(40,40);
         osoitinko = new GameObject(40, 40);
@@ -80,7 +80,7 @@ public class bbd : PhysicsGame
         taso.Color = Color.Brown;
         Add(taso);
     }
-
+    
     
 
     void LisaaPelaaja(Vector paikka, double leveys, double korkeus)
@@ -184,7 +184,7 @@ public class bbd : PhysicsGame
         kentanNimi = ikkuna.InputBox.Text + ".png";
 
         Gravity = new Vector(0, -900);
-        LataaKentta(new ColorTileMap( generate(500, 30) ) );
+        LataaKentta(new ColorTileMap( generate(200, 50) ) );
         LisaaNappaimet();
         Inventory inventory = new Inventory();
         Add(inventory);
@@ -221,13 +221,13 @@ public class bbd : PhysicsGame
     {
         Image kuva = new Image(leveys, korkeus, Color.White);
         // tallenna kuva
-        int tasonkorkeus = 1;
+        int tasonkorkeus = korkeus/2;
         for (int x = 0; x < leveys; x++)
 		{
             tasonkorkeus = tasonkorkeus + RandomGen.NextInt(-3, 3);
-            if (tasonkorkeus < 1)
+            if (tasonkorkeus < 1 * korkeus / 3)
             {
-                tasonkorkeus = 2;
+                tasonkorkeus = 1 * korkeus / 3;
             }
             if (tasonkorkeus >= korkeus)
             {
@@ -332,7 +332,7 @@ public class bbd : PhysicsGame
         janot = new IntMeter(10,0,10);
         janot.LowerLimit += janooo;
         Timer janostin = new Timer();
-        janostin.Interval=39.0;
+        janostin.Interval = 39.0;
         janostin.Timeout += miinusjano;
         janostin.Start();
     }
@@ -344,8 +344,8 @@ public class bbd : PhysicsGame
     void miinusjano()
     {
         janot.Value = janot.Value - 1;
-        int n=janokulu.Count-1;
-        Widget p = janokulu[n];
+        //int n=janokulu.Count-1;
+        Widget p = janokulu[janot.Value];
         p.Destroy();
 
     }

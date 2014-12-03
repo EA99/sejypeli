@@ -7,9 +7,9 @@ static class Ohjelma
     {
         using (bbd game = new bbd())
         {
-#if !DEBUG
+//#if !DEBUG
             game.IsFullScreen = true;
-#endif
+//#endif
             game.Run();
         }
     }
