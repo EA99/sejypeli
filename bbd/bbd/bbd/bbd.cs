@@ -23,6 +23,8 @@ public class bbd : PhysicsGame
     GameObject osoitinko;
     SoundEffect maaliAani = LoadSoundEffect("maali");
     DoubleMeter pelaaja1Elama;
+    IntMeter janot;
+    List<Widget> janokulu;
     string kentanNimi;
 
 
@@ -34,6 +36,7 @@ public class bbd : PhysicsGame
         valikko.AddItemHandler(3, Exit);
         Add(valikko);
         //LisaaNappaimet();
+        janokulu = new List<Widget>();
     }
 
     void LataaKentta(ColorTileMap kentta)
@@ -44,6 +47,7 @@ public class bbd : PhysicsGame
         kentta.SetTileMethod(Color.Red, LisaaPelaaja);
         kentta.SetTileMethod(Color.Yellow, luovihollinen);
         kentta.SetTileMethod(Color.Black,luokivi);
+
         kentta.Optimize();
         kentta.Execute(40,40);
         osoitinko = new GameObject(40, 40);
@@ -68,6 +72,7 @@ public class bbd : PhysicsGame
         }
         else
         {
+
     
         }
         taso.Position = paikka;
@@ -87,6 +92,7 @@ public class bbd : PhysicsGame
         Add(pelaaja1);
         pelaaja1Elama = new DoubleMeter(100);
         pelaaja1Elama.MaxValue = 100;
+        pelaaja1Elama.LowerLimit += delegate { pelaaja1.Destroy(); };
         BarGauge pelaaja1ElamaPalkki = new BarGauge(20, Screen.Width / 3);
         pelaaja1ElamaPalkki.X = Screen.Left + Screen.Width / 4;
         pelaaja1ElamaPalkki.Y = Screen.Top - 40;
@@ -197,6 +203,8 @@ public class bbd : PhysicsGame
         Camera.Zoom(1.5);
         //Camera.ZoomToLevel();
         Camera.Follow(pelaaja1);
+        
+        luojano();
     }
     List<PhysicsObject> esineet()
     {
@@ -292,7 +300,7 @@ public class bbd : PhysicsGame
         if (Mouse.PositionOnWorld != null && osoitinko != null)
         {
             Vector q = Mouse.PositionOnWorld;
-            MessageDisplay.Add(q.X.ToString());
+            
 
             osoitinko.Position = q;
         }
@@ -302,4 +310,75 @@ public class bbd : PhysicsGame
         luokivi(Mouse.PositionOnWorld, 0, 0);
 
     }
+    void luojano()
+    {
+        HorizontalLayout asettelu = new HorizontalLayout();
+        asettelu.Spacing = 10;
+
+        Widget vedet = new Widget(asettelu);
+        vedet.Color = Color.Transparent;
+        vedet.X = Screen.Center.X;
+        vedet.Y = Screen.Top - 30;
+        Add(vedet);
+
+        for (int i = 0; i < 10; i++)
+        {
+            Widget vesi = new Widget(30, 30, Shape.Circle);
+            vesi.Color = Color.Red;
+            vedet.Add(vesi);
+            janokulu.Add(vesi);
+        }
+        
+        janot = new IntMeter(10,0,10);
+        janot.LowerLimit += janooo;
+        Timer janostin = new Timer();
+        janostin.Interval=39.0;
+        janostin.Timeout += miinusjano;
+        janostin.Start();
+    }
+    void janooo()
+    {
+        pelaaja1Elama.SetValue(pelaaja1Elama - 10);
+        Timer.SingleShot(2.0, janoon);
+    }
+    void miinusjano()
+    {
+        janot.Value = janot.Value - 1;
+        int n=janokulu.Count-1;
+        Widget p = janokulu[n];
+        p.Destroy();
+
+    }
+    void janoon()
+    {
+        pelaaja1Elama.SetValue(pelaaja1Elama - 10);
+        Timer.SingleShot(2.0, janooo);
+
+    }
+    void luohiili(Vector paikka,double leveys,double korkeus)
+    {
+        PhysicsObject hiili = PhysicsObject.CreateStaticObject(40, 40);
+        hiili.Position = paikka;
+        hiili.Color = Color.Black;
+        hiili.CollisionIgnoreGroup = 1;
+        Add(hiili);
+    }
+    void luokulta(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject kulta = PhysicsObject.CreateStaticObject(40, 40);
+        kulta.Position = paikka;
+        kulta.Color = Color.Yellow;
+        kulta.CollisionIgnoreGroup = 1;
+        Add(kulta);
+    }
+    void luovesi(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject vesipala = PhysicsObject.CreateStaticObject(40, 40);
+        vesipala.Position = paikka;
+        vesipala.Color = Color.Blue;
+        vesipala.CollisionIgnoreGroup = 1;
+        vesipala.IgnoresCollisionWith(pelaaja1);
+        Add(vesipala);
+    }
+
 }
