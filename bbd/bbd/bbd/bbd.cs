@@ -14,7 +14,7 @@ public class bbd : PhysicsGame
         //Inventory inventory = new Inventory();
         
 
-    PlatformCharacter2 pelaaja1;
+    PlatformCharacter pelaaja1;
 
     Image pelaajanKuva = LoadImage("AAA");
     Image tahtiKuva = LoadImage("norsu2");
@@ -25,6 +25,10 @@ public class bbd : PhysicsGame
     DoubleMeter pelaaja1Elama;
     IntMeter janot;
     List<Widget> janokulu;
+    Image multa = LoadImage("Multapalaeiruohoa");
+    Image kivib = LoadImage("kivi");
+    Image janokuplakuva = LoadImage("janokupla");
+    Image osoitinkuva = LoadImage("cursor");
     string kentanNimi;
 
 
@@ -53,6 +57,7 @@ public class bbd : PhysicsGame
         osoitinko = new GameObject(40, 40);
         osoitinko.Color = Color.Red;
         osoitinko.Position = Mouse.PositionOnWorld;
+        osoitinko.Image = osoitinkuva;
         Add(osoitinko);
         Mouse.ListenMovement(1.0, osoitin, null);
 
@@ -65,6 +70,7 @@ public class bbd : PhysicsGame
     void LisaaTaso(Vector paikka, double leveys, double korkeus)
     {
         PhysicsObject taso = PhysicsObject.CreateStaticObject(leveys, korkeus);
+        taso.Image = multa;
         int noppa = RandomGen.NextInt(1,4);
         if(noppa ==1)
         {
@@ -85,7 +91,7 @@ public class bbd : PhysicsGame
 
     void LisaaPelaaja(Vector paikka, double leveys, double korkeus)
     {
-        pelaaja1 = new PlatformCharacter2(35,90);
+        pelaaja1 = new PlatformCharacter(35,75);
         pelaaja1.Position = paikka;
         pelaaja1.Mass = 2.0;
         pelaaja1.Image = pelaajanKuva;
@@ -94,8 +100,8 @@ public class bbd : PhysicsGame
         pelaaja1Elama.MaxValue = 100;
         pelaaja1Elama.LowerLimit += delegate { pelaaja1.Destroy(); };
         BarGauge pelaaja1ElamaPalkki = new BarGauge(20, Screen.Width / 3);
-        pelaaja1ElamaPalkki.X = Screen.Left + Screen.Width / 4;
-        pelaaja1ElamaPalkki.Y = Screen.Top - 40;
+        pelaaja1ElamaPalkki.X = Screen.Center.X;
+        pelaaja1ElamaPalkki.Y = Screen.Bottom + 30;
         pelaaja1ElamaPalkki.Angle = Angle.FromDegrees(90);
         pelaaja1ElamaPalkki.BindTo(pelaaja1Elama);
         pelaaja1ElamaPalkki.Color = Color.Red;
@@ -109,27 +115,30 @@ public class bbd : PhysicsGame
         Keyboard.Listen(Key.F1, ButtonState.Pressed, ShowControlHelp, "Näytä ohjeet");
         Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Lopeta peli");
 
-        Keyboard.Listen(Key.Left, ButtonState.Down, Liikuta, "Liikkuu vasemmalle", pelaaja1, Direction.Left);
-        Keyboard.Listen(Key.Right, ButtonState.Down, Liikuta, "Liikkuu vasemmalle", pelaaja1, Direction.Right);
-        Keyboard.Listen(Key.Up, ButtonState.Down, Hyppaa, "Pelaaja hyppää", pelaaja1, 950.0);
+        Keyboard.Listen(Key.Left, ButtonState.Down, liikuvas, "Liikkuu vasemmalle");
+        Keyboard.Listen(Key.Right, ButtonState.Down, Liikuoik, "Liikkuu vasemmalle");
+        Keyboard.Listen(Key.Up, ButtonState.Down, Hyppää, "Pelaaja hyppää");
 
         ControllerOne.Listen(Button.Back, ButtonState.Pressed, Exit, "Poistu pelistä");
 
-        ControllerOne.Listen(Button.DPadLeft, ButtonState.Down, Liikuta, "Pelaaja liikkuu vasemmalle", pelaaja1, Direction.Left);
-        ControllerOne.Listen(Button.DPadRight, ButtonState.Down, Liikuta, "Pelaaja liikkuu oikealle", pelaaja1, Direction.Right);
-        ControllerOne.Listen(Button.A, ButtonState.Pressed, Hyppaa, "Pelaaja hyppää", pelaaja1, 350.0);
+        
         Mouse.Listen(MouseButton.Left, ButtonState.Pressed, lkk, "");
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
     }
 
-    void Liikuta(PlatformCharacter2 pelaaja19, Direction nopeus)
+    void Liikuoik()
     {
-        pelaaja19.Walk(nopeus);
+        pelaaja1.Walk(390);
     }
 
-    void Hyppaa(PlatformCharacter2 pelaaja1,Double nopeus)
+    void Hyppää()
     {
-        pelaaja1.Jump(nopeus);
+        pelaaja1.Jump(390);
+    }
+    void liikuvas()
+    {
+        
+        pelaaja1.Walk(-390);
     }
     void aloita()
     {
@@ -184,7 +193,7 @@ public class bbd : PhysicsGame
         kentanNimi = ikkuna.InputBox.Text + ".png";
 
         Gravity = new Vector(0, -900);
-        LataaKentta(new ColorTileMap( generate(200, 50) ) );
+        LataaKentta(new ColorTileMap( generate(200, 60) ) );
         LisaaNappaimet();
         Inventory inventory = new Inventory();
         Add(inventory);
@@ -203,7 +212,7 @@ public class bbd : PhysicsGame
         Camera.Zoom(1.5);
         //Camera.ZoomToLevel();
         Camera.Follow(pelaaja1);
-        
+        luoesinevalikko();
         luojano();
     }
     List<PhysicsObject> esineet()
@@ -233,7 +242,7 @@ public class bbd : PhysicsGame
             {
                 tasonkorkeus = korkeus-1;
             }
-            int multalkaa = RandomGen.NextInt(0, tasonkorkeus);
+            int multalkaa = RandomGen.NextInt(0, tasonkorkeus+1);
 
             for (int i = 0; i < multalkaa; i++)
             {
@@ -261,6 +270,8 @@ public class bbd : PhysicsGame
     {
         PhysicsObject kivi = PhysicsObject.CreateStaticObject(40, 40);
         kivi.Position = paikka;
+        kivi.Image = kivib;
+
         kivi.Color = Color.Gray;
         kivi.CollisionIgnoreGroup = 1;
         Add(kivi);
@@ -318,7 +329,7 @@ public class bbd : PhysicsGame
         Widget vedet = new Widget(asettelu);
         vedet.Color = Color.Transparent;
         vedet.X = Screen.Center.X;
-        vedet.Y = Screen.Top - 30;
+        vedet.Y = Screen.Bottom + 120;
         Add(vedet);
 
         for (int i = 0; i < 10; i++)
@@ -327,6 +338,7 @@ public class bbd : PhysicsGame
             vesi.Color = Color.Red;
             vedet.Add(vesi);
             janokulu.Add(vesi);
+            vesi.Image = janokuplakuva;
         }
         
         janot = new IntMeter(10,0,10);
@@ -380,5 +392,96 @@ public class bbd : PhysicsGame
         vesipala.IgnoresCollisionWith(pelaaja1);
         Add(vesipala);
     }
+    void luoesinevalikko()
+    {
+        HorizontalLayout s = new HorizontalLayout();
+        s.Spacing = 5;
+        Widget v = new Widget(s);
+        v.Color = Color.Brown;
+        v.X = Screen.Center.X;
+        v.Y = Screen.Bottom + 60;
+        Add(v);
+        for (int i = 0; i < 10; i++)
+        {
+            Widget n = new Widget(40, 40);
+            n.Color = Color.LightGray;
+            n.BorderColor = Color.Charcoal;
+            v.Add(n);
+            
+        }
+        Keyboard.Listen(Key.E, ButtonState.Pressed, kokoesinevalikko, "");
+    }
+    void kokoesinevalikko()
+    {
+        
+        HorizontalLayout yu = new HorizontalLayout();
+        yu.Spacing = 5;
+        
+        Widget n = new Widget(yu);
+        n.X = Screen.Center.X-170;
+        n.Y = Screen.Center.Y;
+        n.Color = Color.Brown;
+        Add(n);
+        Widget yläosa = new Widget(yu);
+        yläosa.X = Screen.Center.X;
+        yläosa.Y = Screen.Center.Y-80;
+        yläosa.Color = Color.Brown;
+        Add(yläosa);
+        Widget hahmokuva = new Widget(100, 200);
+        hahmokuva.Color = Color.Red;
+        hahmokuva.Image = pelaajanKuva;
+        n.Add(hahmokuva);
+        for (int i = 0; i < 10; i++)
+        {
+            Widget slot = new Widget(40, 40);
+            slot.Color = Color.LightGray;
+            slot.BorderColor = Color.Charcoal;
+            yläosa.Add(slot);
+            
 
+        }
+        Widget rivi2 = new Widget(yu);
+        rivi2.X = Screen.Center.X;
+        rivi2.Y = Screen.Center.Y - 130;
+        rivi2.Color = Color.Brown;
+        Add(rivi2);
+        for (int i = 0; i < 10; i++)
+        {
+            Widget slot = new Widget(40, 40);
+            slot.Color = Color.LightGray;
+            slot.BorderColor = Color.Charcoal;
+            rivi2.Add(slot);
+
+
+        }
+        Widget rivi3 = new Widget(yu);
+        rivi3.X = Screen.Center.X;
+        rivi3.Y = Screen.Center.Y - 180;
+        rivi3.Color = Color.Brown;
+        Add(rivi3);
+        for (int i = 0; i < 10; i++)
+        {
+            Widget slot = new Widget(40, 40);
+            slot.Color = Color.LightGray;
+            slot.BorderColor = Color.Charcoal;
+            rivi3.Add(slot);
+
+
+        }
+        Widget rivi4 = new Widget(yu);
+        rivi4.X = Screen.Center.X;
+        rivi4.Y = Screen.Center.Y - 180;
+        rivi4.Color = Color.Brown;
+        Add(rivi4);
+        for (int i = 0; i < 10; i++)
+        {
+            Widget slot = new Widget(40, 40);
+            slot.Color = Color.LightGray;
+            slot.BorderColor = Color.Charcoal;
+            rivi4.Add(slot);
+
+
+        }
+
+    }
 }

@@ -16,7 +16,7 @@ class Inventory : Widget
     /// </summary>
     public event Action<PhysicsObject> ItemSelected;
 
-
+    
     /// <summary>
     /// Luo uuden esinevalikon.
     /// </summary>
