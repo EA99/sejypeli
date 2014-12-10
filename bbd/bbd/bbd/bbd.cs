@@ -296,9 +296,29 @@ public class bbd : PhysicsGame
             int pulppuava = i;
             int korpulp = RandomGen.NextInt(39, 46);
             bool onko = RandomGen.NextBool();
+            int levinnyto = pulppuava+1;
+            int levennytv = pulppuava - 1;
             if (onko == true)
             {
                 kuva[korpulp, pulppuava] = Color.Blue;
+                for (i = 0; i > 3; i++)
+                {
+                    if (kuva[korpulp, levinnyto] == Color.White)
+                    {
+                        kuva[korpulp, levinnyto] = Color.Blue;
+                        levinnyto = levinnyto + 1;
+
+                    }
+                }
+                for (i = 0; i > 3; i++)
+                {
+                    if (kuva[korpulp, levennytv] == Color.White)
+                    {
+                        kuva[korpulp,levennytv] = Color.White;
+                        levennytv = levennytv - 1;
+ 
+                    }
+                }
             }
 
         }
