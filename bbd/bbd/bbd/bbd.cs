@@ -29,9 +29,28 @@ public class bbd : PhysicsGame
     Image kivib = LoadImage("kivi");
     Image janokuplakuva = LoadImage("janokupla");
     Image osoitinkuva = LoadImage("cursor");
+    List<GameObject> esineet2;
+    GameObject selecteditem;
+    List<Widget> esineslotit;
+    int käsiselecteditem;
     string kentanNimi;
-
-
+    bool avattu = false;
+    HorizontalLayout yu;
+    VerticalLayout qq;
+    Widget rivi2;
+    Widget rivi3;
+    Widget rivi4;
+    Widget n;
+    Widget yläosa;
+    Widget varusteet;
+    List<GameObject> Equipment;
+    int selausnumero;
+    Image banaanikuva = LoadImage("banaanit");
+    List<Widget> käsitaso;
+    Widget kehys;
+    GameObject pelaajankäsi;
+    Widget rasti;
+    Widget vinpain;
     public override void Begin()
     {
         MultiSelectWindow valikko = new MultiSelectWindow("Game Menu", "Single player", "Multiplayer", "Options", "Quit");
@@ -52,6 +71,7 @@ public class bbd : PhysicsGame
         kentta.SetTileMethod(Color.Yellow, luokulta);
         kentta.SetTileMethod(Color.Black,luokivi);
         kentta.SetTileMethod(Color.Gray, luohiili);
+        kentta.SetTileMethod(Color.Blue, luovesi);
         kentta.Optimize();
         kentta.Execute(40,40);
         osoitinko = new GameObject(40, 40);
@@ -107,7 +127,11 @@ public class bbd : PhysicsGame
         pelaaja1ElamaPalkki.Color = Color.Red;
         pelaaja1ElamaPalkki.BarColor = Color.Green;
         Add(pelaaja1ElamaPalkki);
-        
+        pelaajankäsi = new GameObject(20, 20);
+        pelaaja1.Add(pelaajankäsi);
+        pelaajankäsi.Color = Color.Transparent;
+        pelaajankäsi.X = pelaajankäsi.X + 14;
+        pelaajankäsi.Y = pelaajankäsi.Y - 5;
     }
 
     void LisaaNappaimet()
@@ -128,17 +152,17 @@ public class bbd : PhysicsGame
 
     void Liikuoik()
     {
-        pelaaja1.Walk(390);
+        pelaaja1.Walk(290);
     }
 
     void Hyppää()
     {
-        pelaaja1.Jump(390);
+        pelaaja1.Jump(290);
     }
     void liikuvas()
     {
         
-        pelaaja1.Walk(-390);
+        pelaaja1.Walk(-290);
     }
     void aloita()
     {
@@ -197,7 +221,9 @@ public class bbd : PhysicsGame
         LisaaNappaimet();
         Inventory inventory = new Inventory();
         Add(inventory);
-        
+        yu = new HorizontalLayout();
+        yu.Spacing = 5;
+        qq = new VerticalLayout();
         foreach (PhysicsObject esine in esineet())
         {
             inventory.AddItem(esine, kivihakku);
@@ -212,8 +238,19 @@ public class bbd : PhysicsGame
         Camera.Zoom(1.5);
         //Camera.ZoomToLevel();
         Camera.Follow(pelaaja1);
-        luoesinevalikko();
+        
         luojano();
+        esineet2 = new List<GameObject>();
+        esineslotit = new List<Widget>();
+        käsiselecteditem = 1;
+        GameObject banaanit = new GameObject(35, 35);
+        banaanit.Image = banaanikuva;
+        esineet2.Add(banaanit);
+        GameObject puuhakku = new GameObject(35, 35);
+        puuhakku.Image = kivihakku;
+        esineet2.Add(puuhakku);
+        käsitaso = new List<Widget>();
+        luoesinevalikko();
     }
     List<PhysicsObject> esineet()
     {
@@ -242,7 +279,7 @@ public class bbd : PhysicsGame
             {
                 tasonkorkeus = korkeus-1;
             }
-            int multalkaa = RandomGen.NextInt(0, tasonkorkeus+1);
+            int multalkaa = RandomGen.NextInt(0, tasonkorkeus);
 
             for (int i = 0; i < multalkaa; i++)
             {
@@ -253,7 +290,18 @@ public class bbd : PhysicsGame
                 kuva[(korkeus-1)-i, x] = Color.Brown;
             }
 		}
-        kuva[2, 0] = Color.Red;
+        kuva[35, leveys/2] = Color.Red;
+        for (int i=0; i <leveys; i++)
+        {
+            int pulppuava = i;
+            int korpulp = RandomGen.NextInt(39, 46);
+            bool onko = RandomGen.NextBool();
+            if (onko == true)
+            {
+                kuva[korpulp, pulppuava] = Color.Blue;
+            }
+
+        }
         // Oletetaan, että kenttä on muuttujassa: Image kentanKuva
 
         string tiedostonNimi =
@@ -389,43 +437,99 @@ public class bbd : PhysicsGame
         vesipala.Position = paikka;
         vesipala.Color = Color.Blue;
         vesipala.CollisionIgnoreGroup = 1;
-        vesipala.IgnoresCollisionWith(pelaaja1);
+        //vesipala.IgnoresCollisionWith(pelaaja1 as PhysicsObject);
         Add(vesipala);
     }
     void luoesinevalikko()
     {
+        
+        selausnumero = 0;
         HorizontalLayout s = new HorizontalLayout();
         s.Spacing = 5;
         Widget v = new Widget(s);
-        v.Color = Color.Brown;
+        v.Color = Color.Cyan;
         v.X = Screen.Center.X;
         v.Y = Screen.Bottom + 60;
         Add(v);
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 9; i++)
         {
-            Widget n = new Widget(40, 40);
-            n.Color = Color.LightGray;
-            n.BorderColor = Color.Charcoal;
-            v.Add(n);
-            
+            Widget slot = new Widget(40, 40);
+            slot.Color = Color.LightGray;
+            slot.BorderColor = Color.Charcoal;
+            v.Add(slot);
+            if (selausnumero < esineet2.Count)
+            {
+                GameObject väliolio = esineet2[selausnumero];
+                slot.Add(väliolio);
+                esineslotit.Add(slot);
+                väliolio.Color = Color.Blue;
+                slot.Image = väliolio.Image;
+                käsitaso.Add(slot);
+                if (käsiselecteditem == selausnumero)
+                {
+                    valitseuusikäsiesine(selausnumero);
+                   
+                }
+                selausnumero = selausnumero + 1;
+                Keyboard.Listen(Key.D1, ButtonState.Pressed, delegate { valitseuusikäsiesine(1); }, "");
+                Keyboard.Listen(Key.D2, ButtonState.Pressed, delegate { valitseuusikäsiesine(2); }, "");
+                Keyboard.Listen(Key.D3, ButtonState.Pressed, delegate { valitseuusikäsiesine(3); }, "");
+                Keyboard.Listen(Key.D4, ButtonState.Pressed, delegate { valitseuusikäsiesine(4); }, "");
+                Keyboard.Listen(Key.D5, ButtonState.Pressed, delegate { valitseuusikäsiesine(5); }, "");
+                Keyboard.Listen(Key.D6, ButtonState.Pressed, delegate { valitseuusikäsiesine(6); }, "");
+                Keyboard.Listen(Key.D7, ButtonState.Pressed, delegate { valitseuusikäsiesine(7); }, "");
+                Keyboard.Listen(Key.D8, ButtonState.Pressed, delegate { valitseuusikäsiesine(8); }, "");
+                Keyboard.Listen(Key.D9, ButtonState.Pressed, delegate { valitseuusikäsiesine(9); }, "");
+            }
         }
-        Keyboard.Listen(Key.E, ButtonState.Pressed, kokoesinevalikko, "");
+        Keyboard.Listen(Key.E, ButtonState.Pressed,kysykokoesinevalikkoa, "");
     }
     void kokoesinevalikko()
     {
+
+        kehys = new Widget(yu);
+        kehys.Color = Color.Cyan;
+        kehys.X = Screen.Center.X;
+        kehys.Y = Screen.Center.Y-50;
+        Widget valikkokehys = new Widget(500, 400);
+        valikkokehys.Color = Color.Cyan;
         
-        HorizontalLayout yu = new HorizontalLayout();
-        yu.Spacing = 5;
+        Add(kehys);
+        kehys.Add(valikkokehys);
         
-        Widget n = new Widget(yu);
+        
+        qq.Spacing = 5;
+        varusteet = new Widget(qq);
+        varusteet.X = Screen.Center.X-90;
+        varusteet.Y = Screen.Center.Y;
+        varusteet.Color = Color.Cyan;
+        Add(varusteet);
+        Widget kypärä = new Widget(40,40);
+        Widget paita = new Widget(40, 40);
+        Widget housut = new Widget(40, 40);
+        Widget kengät = new Widget(40, 40);
+        kypärä.Color = Color.LightGray;
+        kypärä.BorderColor = Color.Charcoal;
+        paita.Color = Color.LightGray;
+        paita.BorderColor = Color.Charcoal;
+        housut.Color = Color.LightGray;
+        housut.BorderColor = Color.Charcoal;
+        kengät.Color = Color.LightGray;
+        kengät.BorderColor = Color.Charcoal;
+        varusteet.Add(kypärä);
+        varusteet.Add(paita);
+        varusteet.Add(housut);
+        varusteet.Add(kengät);
+
+        n = new Widget(yu);
         n.X = Screen.Center.X-170;
         n.Y = Screen.Center.Y;
-        n.Color = Color.Brown;
+        n.Color = Color.Cyan;
         Add(n);
-        Widget yläosa = new Widget(yu);
+        yläosa = new Widget(yu);
         yläosa.X = Screen.Center.X;
-        yläosa.Y = Screen.Center.Y-80;
-        yläosa.Color = Color.Brown;
+        yläosa.Y = Screen.Center.Y-140;
+        yläosa.Color = Color.LightGray;
         Add(yläosa);
         Widget hahmokuva = new Widget(100, 200);
         hahmokuva.Color = Color.Red;
@@ -440,10 +544,10 @@ public class bbd : PhysicsGame
             
 
         }
-        Widget rivi2 = new Widget(yu);
+        rivi2 = new Widget(yu);
         rivi2.X = Screen.Center.X;
         rivi2.Y = Screen.Center.Y - 130;
-        rivi2.Color = Color.Brown;
+        rivi2.Color = Color.Cyan;
         Add(rivi2);
         for (int i = 0; i < 10; i++)
         {
@@ -454,10 +558,10 @@ public class bbd : PhysicsGame
 
 
         }
-        Widget rivi3 = new Widget(yu);
+        rivi3 = new Widget(yu);
         rivi3.X = Screen.Center.X;
         rivi3.Y = Screen.Center.Y - 180;
-        rivi3.Color = Color.Brown;
+        rivi3.Color = Color.Cyan;
         Add(rivi3);
         for (int i = 0; i < 10; i++)
         {
@@ -468,10 +572,10 @@ public class bbd : PhysicsGame
 
 
         }
-        Widget rivi4 = new Widget(yu);
+        rivi4 = new Widget(yu);
         rivi4.X = Screen.Center.X;
         rivi4.Y = Screen.Center.Y - 180;
-        rivi4.Color = Color.Brown;
+        rivi4.Color = Color.Cyan;
         Add(rivi4);
         for (int i = 0; i < 10; i++)
         {
@@ -482,6 +586,63 @@ public class bbd : PhysicsGame
 
 
         }
+        vinpain = new Widget(yu);
+        vinpain.X = Screen.Center.X + 210;
+        vinpain.Y = Screen.Center.Y + 120;
+        Add(vinpain);
+        rasti = new Widget(40, 40);
+        rasti.X = Screen.Center.X + 210;
+        rasti.Y = Screen.Center.Y + 120;
+        rasti.Color = Color.Red;
+        vinpain.Add(rasti);
+        Mouse.ListenOn(rasti, MouseButton.Left,ButtonState.Pressed, kysykokoesinevalikkoa,"");
+    }
+    void kysykokoesinevalikkoa()
+    {
+        if (avattu == true)
+        {
+            kehys.Destroy();
+
+            vinpain.Destroy();
+
+            varusteet.Destroy();
+
+            
+            n.Destroy();
+            
+            yläosa.Destroy();
+            
+            rivi2.Destroy();
+            
+            rivi3.Destroy();
+            
+            rivi4.Destroy();
+            avattu=false;
+            return;
+        }
+        avattu = true;
+        kokoesinevalikko();
+    }
+    void valitseuusikäsiesine(int numero)
+    {
+
+
+        numero = numero - 1;
+        if (numero < käsitaso.Count)
+        {
+
+            käsitaso[numero].BorderColor = Color.Red;
+            käsitaso[numero].Color = Color.Green;
+            pelaajankäsi.Image = käsitaso[numero].Image;
+        }
+            
+        
+    }
+    void saveworld(string nimi)
+    {
+        SaveGame(nimi);
+        Timer.SingleShot(39, delegate { saveworld(nimi); });
+
 
     }
 }
