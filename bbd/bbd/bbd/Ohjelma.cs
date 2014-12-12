@@ -10,6 +10,7 @@ static class Ohjelma
 #if !DEBUG
             game.IsFullScreen = true;
 #endif
+            
             game.Run();
         }
     }
