@@ -189,8 +189,8 @@ public class bbd : PhysicsGame
 
         lll = new VerticalLayout();
         Widget tarjotin = new Widget(lll);
-        Add(tarjotin);
-        for (int i = 0; i > num2; i++)
+        Add(tarjotin,3);
+        for (int i = 0; i < num2; i++)
         {
             Label tonttu1 = new Label(nykymaailma(i));
             tonttu1.Color = Color.LightGray;
@@ -781,23 +781,24 @@ public class bbd : PhysicsGame
     }
     int muutaluvuksi(List<string> tekstil)
     {
-        List<string> dd = new List<string>();
-        for (char c = 'A'; c <= 'Z'; ++c)
-        {
-            dd.Add(c.ToString());
-        }
-        for (int i = 0; i < tekstil.Count; i++)
-        {
-            string tekstipä = tekstil[i];
+        //List<string> dd = new List<string>();
+        //for (char c = 'A'; c <= 'Z'; ++c)
+        //{
+        //    dd.Add(c.ToString());
+        //}
+        //for (int i = 0; i < tekstil.Count; i++)
+        //{
+        //    string tekstipä = tekstil[i];
             
-        }
+        //}
         
+        //string teksti = 
+        //int vaihdettu = 0;
+        //for (int i =0; i<teksti.Length;i++)
+        //{
 
-        int vaihdettu = 0;
-        for (int i =0; i<teksti.Length;i++)
-        {
-
-        }
+        //}
+        int vaihdettu = 1;
         return vaihdettu;
     }
 }
