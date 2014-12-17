@@ -57,6 +57,7 @@ public class bbd : PhysicsGame
     [Save] public Image maailma1;
     List<string> kaamos = new List<string>();
     string niminimi;
+    List<bool> asetukset;
     public override void Begin()
     {
         MultiSelectWindow valikko = new MultiSelectWindow("Game Menu", "Single player", "Multiplayer", "Options", "Quit");
@@ -192,6 +193,7 @@ public class bbd : PhysicsGame
         for (int i = 0; i > num2; i++)
         {
             Label tonttu1 = new Label(nykymaailma(i));
+            tonttu1.Color = Color.LightGray;
             tarjotin.Add(tonttu1);
             Mouse.ListenOn(tonttu1, MouseButton.Left, ButtonState.Pressed, delegate { pelaa(i); }, "");
 
@@ -237,7 +239,7 @@ public class bbd : PhysicsGame
     void LuoUusiMaailma(InputWindow ikkuna)
     {
 
-        kentanNimi = ikkuna.InputBox.Text + ".xml";
+        kentanNimi = ikkuna.InputBox.Text;
         Vedikartta = new List<PhysicsObject>();
         Gravity = new Vector(0, -900);
         LataaKentta(new ColorTileMap( generate(200, 60,kentanNimi) ) );
@@ -342,7 +344,7 @@ public class bbd : PhysicsGame
         //System.IO.File.WriteAllText(@"C:\Users\User\Documents\Visual Studio 2010\Projects\E_A999\trunk\bbd\bbd\bbdContent/maailmalista.txt",tiedostonNimi);
         maailma1 = kuva;
         listaa(kn);
-        niminimi = kn;
+        
         saveworld(kn);
         return kuva;
     }
@@ -378,8 +380,9 @@ public class bbd : PhysicsGame
     void listaa(string maaillmakokonaisuudennimi)
     {
         
-        if(DataStorage.Exists(maaillmakokonaisuudennimi))
+        if(DataStorage.Exists("maailmat.xml"))
         {
+            //AddFactory<List<string>>("", täytäkaamos);
             kaamos=DataStorage.Load<List<string>>(kaamos, "maailmat.xml");
         }
         
@@ -699,10 +702,16 @@ public class bbd : PhysicsGame
     }
     void saveworld(string nimi)
     {
-        SaveGame(niminimi);
-        Timer.SingleShot(39, delegate { saveworld(nimi); });
-
-
+        string mj = nimi + "w1" + ".xml";
+        DataStorage.Save<Image>(maailma1, mj);
+        string mj2 = nimi + "stg" + ".xml";
+        DataStorage.Save<List<bool>>(asetukset, mj2);
+        //bookmark
+        //
+        //
+        //
+        //
+        Timer.SingleShot(39.0, delegate { saveworld(nimi); });
     }
     void equip(Image varusteenkuva, GameObject varusteitse)
     {
@@ -764,5 +773,31 @@ public class bbd : PhysicsGame
         esineet2.Add(puuhakku);
         käsitaso = new List<Widget>();
         luoesinevalikko();
+    }
+    List<string> täytäkaamos()
+    {
+        List<string> maa_ilma = kaamos;
+        return maa_ilma;
+    }
+    int muutaluvuksi(List<string> tekstil)
+    {
+        List<string> dd = new List<string>();
+        for (char c = 'A'; c <= 'Z'; ++c)
+        {
+            dd.Add(c.ToString());
+        }
+        for (int i = 0; i < tekstil.Count; i++)
+        {
+            string tekstipä = tekstil[i];
+            
+        }
+        
+
+        int vaihdettu = 0;
+        for (int i =0; i<teksti.Length;i++)
+        {
+
+        }
+        return vaihdettu;
     }
 }
